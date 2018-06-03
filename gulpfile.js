@@ -19,8 +19,13 @@ const align = require('gulp-align');
 
 const htmlbeautify = require('gulp-html-beautify');
 
+/*GULP-SASS*/
+
+const sass = require('gulp-sass');
+const rename = require("gulp-rename");
+
 gulp.task('default', ['copy'], function() {
-    gulp.start('build-img', 'merge-css', 'html-replace', 'compress-js', 'cssmin', 'jshint', 'csslint', 'align', 'htmlbeautify');
+    gulp.start('build-img', 'merge-css', 'html-replace', 'compress-js', 'cssmin', 'htmlbeautify' ,'sassprod');
 })
 
 gulp.task('clean', function() {
@@ -72,26 +77,13 @@ gulp.task('cssmin', function () {
         .pipe(gulp.dest('dist/css'));
 });
 
-gulp.task('jshint', function() {
-  return gulp.src('./dist/js/**/*.js')
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'));
-});
-
-gulp.task('csslint', function() {
-    
-  csslint.addFormatter('csslint-stylish');
-    
-  gulp.src('dist/css/site.css')
-    .pipe(csslint({'shorthand' : true}))
-    .pipe(csslint.formatter('stylish'));
-});
-
+/*Não usada//
 gulp.task('align', function () {
     return gulp.src('./gulpfile.js')
         .pipe(align())
         .pipe(gulp.dest('./dist/'))
 })
+*/
 
 gulp.task('htmlbeautify', function() {
   var options = {
@@ -101,3 +93,43 @@ gulp.task('htmlbeautify', function() {
     .pipe(htmlbeautify(options))
     .pipe(gulp.dest('./dist/'))
 });
+
+gulp.task('cleanscss', function() {
+   gulp.src('dist/scss')
+        . pipe(clean());
+});
+
+gulp.task('sassprod', ['cleanscss'], function() {
+    
+    var sassProdOptions = {
+        outputStyle: 'compressed'
+    }
+    
+    return gulp.src('./src/scss/**/*.scss')
+        .pipe(sass(sassProdOptions).on('error', sass.logError))
+        /*RENAME
+        .pipe(rename({
+            suffix: ".min",
+        }))
+        */
+        .pipe(gulp.dest('./dist/css/'));
+});
+
+/*
+gulp.task('jshint', function() {
+  return gulp.src('./dist/jsERRO.js')
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'));
+});
+*/
+
+/*
+gulp.task('csslint', ['sassprod'], function() {
+    
+  csslint.addFormatter('csslint-stylish');
+    
+  gulp.src('dist/css/site.css')
+    .pipe(csslint({'shorthand' : true}))
+    .pipe(csslint.formatter('stylish'));
+});
+*/
