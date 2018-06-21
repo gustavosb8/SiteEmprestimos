@@ -1,0 +1,170 @@
+//colors
+$white: #fff;
+$color_tundora_approx: #444;
+$color_log_cabin_approx: #222;
+$color_tapa_approx: #777;
+$gallery: #efefef;
+$color_mountain_mist_approx: #999;
+
+//urls
+$url_0: url(../img/sky.jpg);
+
+//mixins
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+     -moz-border-radius: $radius;
+      -ms-border-radius: $radius;
+          border-radius: $radius;
+}
+
+#logo {
+	display: inline-block;
+	color: $white;
+	text-decoration: none;
+	width: 49%;
+	img {
+		width: 50px;
+		//Mixins #####################################
+        @include border-radius(3px)
+		margin-right: 8px;
+		vertical-align: middle;
+	}
+	span {
+		display: inline-block;
+	}
+}
+nav {
+	width: 50%;
+	display: inline-block;
+	text-align: right;
+	ul {
+		list-style: none;
+		margin: 0;
+		li {
+			display: inline-block;
+			a {
+				color: $white;
+				text-decoration: none;
+				display: block;
+				padding: 10px 15px;
+				//Mixins #####################################
+                @include border-radius(3px);
+				transition: 0.3s ease all;
+				&:hover {
+					background: $color_tundora_approx;
+				}
+			}
+		}
+	}
+}
+footer {
+	background: $color_log_cabin_approx;
+	color: $color_tapa_approx;
+	padding: 40px;
+	text-align: center;
+	img {
+		display: block;
+		//Mixins #####################################
+        @include border-radius(5px);
+		width: 80px;
+		margin: 0 auto 10px;
+	}
+}
+.hero {
+	min-height: 800px;
+	text-align: center;
+	background-image: $url_0;
+	background-size: cover;
+}
+.hero-content {
+	color: $white;
+	padding-top: 130px;
+	h1 {
+		font-size: 100px;
+		margin: 0;
+	}
+	p {
+		font-size: 50px;
+	}
+	a {
+		display: inline-block;
+		color: $white;
+		border: 3px solid $white;
+		//Mixins #####################################
+        @include border-radius(3px);
+		padding: 15px 30px;
+		margin-right: 20px;
+		text-decoration: none;
+		font-size: 28px;
+	}
+}
+.site-section {
+	padding-bottom: 50px;
+	padding-top: 50px;
+}
+.site-section-secondary {
+	background: $gallery;
+}
+.site-section-inside {
+	width: 80%;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+.section-header {
+	text-align: center;
+	margin-bottom: 30px;
+	h2 {
+		font-size: 30px;
+		letter-spacing: 2px;
+		text-transform: uppercase;
+		font-weight: 300;
+		color: $color_tapa_approx;
+	}
+}
+.feature-box {
+	display: inline-block;
+	width: 33%;
+	padding: 20px 30px;
+	img {
+		margin-bottom: 12px;
+		width: 80px;
+	}
+	h5 {
+		font-size: 20px;
+		color: $color_mountain_mist_approx;
+		text-transform: uppercase;
+		font-weight: 300;
+		letter-spacing: 2px;
+		margin: 0;
+	}
+}
+.testimonial-box {
+	display: inline-block;
+	width: 33%;
+	padding: 20px 30px;
+}
+.testimonial-content {
+	background: $white;
+	padding: 15px;
+	//Mixins #####################################
+    @include border-radius(4px);
+	margin-bottom: 15px;
+}
+.testimonial-author {
+	img {
+		float: left;
+		width: 80px;
+		//Mixins #####################################
+        @include border-radius(50%);
+		margin-right: 15px;
+		vertical-align: middle;
+	}
+	h5 {
+		font-size: 18px;
+		margin: 0;
+		padding-top: 15px;
+	}
+	span {
+		font-size: 14px;
+	}
+}

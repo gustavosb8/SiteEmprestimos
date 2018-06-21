@@ -1,1 +1,84 @@
-$(document).ready(function(){var v=$("#bntClose-sucesso");$.getJSON("http://localhost:8090/TrojanWebService/webservice/serviceemprestimo/listaremprestimos",function(r){var l=0,u=$("#tbody");$.each(r,function(t,e){var n=$("<tr>"),o=$("<td>"),a=$("<td>"),s=$("<td>"),i=$("<td>"),c=$("<td>"),p=$("<div>");o.text(r[l].nome),a.text(r[l].titulo),s.text(r[l].tipo),i.text(r[l].data);var d=$("<i>");d.addClass("glyphicon glyphicon-triangle-bottom"),p.text("Devolver  "),p.val(l),p.append(d),c.append(p),p.addClass("btn btn-danger"),$(p).click(function(){o.text(),a.text();var t={nome:o.text(),titulo:a.text(),tipo:s.text(),data:i.text()};$.ajax({type:"POST",url:"http://localhost:8090/TrojanWebService/webservice/serviceemprestimo/devolver",data:JSON.stringify(t),contentType:"application/json",success:function(t){$("#sucesso").text(t),$("#sucesso").append(v),$("#sucesso").show(),$("#bntClose-sucesso").click(function(){$(this).parent().hide(),location.reload(!0)})}})}),n.append(o),n.append(a),n.append(s),n.append(i),n.append(c),u.append(n),l++})})}),$(document).ready(function(){$("#bntClose").click(function(){$(this).parent().hide()})});
+$(document).ready(function () {
+
+     var botao = $('#bntClose-sucesso');
+    $.getJSON("http://localhost:8090/TrojanWebService/webservice/serviceemprestimo/listaremprestimos", function (lista) {
+        var i = 0;
+        var tbody = $("#tbody");
+
+        $.each(lista, function (key, data) {
+            //console.log(key);
+
+            var tr = $('<tr>');
+
+            var novaLinhaNOME = $('<td>');
+            var novaLinhaTITULO = $('<td>');
+            var novaLinhaTIPO = $('<td>');
+            var novaLinhaDATA = $('<td>');
+
+            var novaLinhaOpcao = $('<td>');
+            var button = $('<div>');
+            
+            novaLinhaNOME.text(lista[i].nome);
+            novaLinhaTITULO.text(lista[i].titulo);
+            novaLinhaTIPO.text(lista[i].tipo);
+            novaLinhaDATA.text(lista[i].data);
+            
+            var jacks = $('<i>');
+            jacks.addClass('glyphicon glyphicon-triangle-bottom');
+            
+            button.text("Devolver  ");
+            button.val(i);
+            button.append(jacks);
+            novaLinhaOpcao.append(button);
+
+            button.addClass('btn btn-danger');
+
+            $(button).click(function () {
+                novaLinhaNOME.text()
+                novaLinhaTITULO.text();
+
+                var url = "http://localhost:8090/TrojanWebService/webservice/serviceemprestimo/devolver";
+
+                var devoculao = {
+                    "nome": novaLinhaNOME.text(),
+                    "titulo": novaLinhaTITULO.text(),
+                    "tipo": novaLinhaTIPO.text(),
+                    "data": novaLinhaDATA.text()
+                };
+                
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: JSON.stringify(devoculao),
+                    contentType: 'application/json',
+                    success: function (result) {
+                        $('#sucesso').text(result);
+                        $('#sucesso').append(botao);
+                        $('#sucesso').show();
+
+                        $('#bntClose-sucesso').click(function () {
+                            $(this).parent().hide();
+                            location.reload(true);
+                        });
+                    }
+                });
+            });
+
+
+            tr.append(novaLinhaNOME);
+            tr.append(novaLinhaTITULO);
+            tr.append(novaLinhaTIPO);
+            tr.append(novaLinhaDATA);
+            tr.append(novaLinhaOpcao);
+
+            tbody.append(tr);
+            i++;
+        });
+    });
+});
+
+$(document).ready(function () {
+    $('#bntClose').click(function () {
+        $(this).parent().hide();
+    });
+});

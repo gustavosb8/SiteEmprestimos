@@ -10,12 +10,11 @@ const pump = require('pump');
 const cssmin = require('gulp-cssmin');
 
 const cleanCSS = require('gulp-clean-css');
-const browserSync = require('browser-sync');
 
-const jshint = require('gulp-jshint');
-const csslint = require('gulp-csslint');
+//const jshint = require('gulp-jshint');
+//const csslint = require('gulp-csslint');
 
-const align = require('gulp-align');
+//const align = require('gulp-align');
 
 const htmlbeautify = require('gulp-html-beautify');
 
@@ -24,8 +23,20 @@ const htmlbeautify = require('gulp-html-beautify');
 const sass = require('gulp-sass');
 const rename = require("gulp-rename");
 
+/*sprite*/
+
+//const buffer = require('vinyl-buffer');
+//const csso = require('gulp-csso');
+//const merge = require('merge-stream');
+//const spritesmith = require('gulp.spritesmith');
+
+/*INLINE*/
+
+const inlinesource = require('gulp-inline-source');
+
+
 gulp.task('default', ['copy'], function() {
-    gulp.start('build-img', 'merge-css', 'html-replace', 'compress-js', 'cssmin', 'htmlbeautify' ,'sassprod');
+    gulp.start('build-img', 'merge-css', 'html-replace', 'compress-js', 'cssmin', 'htmlbeautify' ,'sassprod', 'inlinesource');
 })
 
 gulp.task('clean', function() {
@@ -35,20 +46,20 @@ gulp.task('clean', function() {
 
 gulp.task('copy', ['clean'] ,  function() {
 
-   return gulp.src('src/**/*')
+    gulp.src('src/**/*')
               .pipe(gulp.dest('dist') );
 });
 
 
 gulp.task('build-img',  function() {
-    gulp.src('dist/img/**/*')
+    gulp.src('dist/img/*')
         .pipe(imagemin() )
-        .pipe(gulp.dest('dist/img') );
+        .pipe(gulp.dest('dist/img/') );
 
 });
 
 gulp.task('merge-css', function() {
-    gulp.src(['dist/css/bootstrap.css',
+     gulp.src(['dist/css/bootstrap.css',
               'dist/css/bootstrap.min.css',
               'dist/css/bootstrap-theme.css',
               'dist/css/bootstrap-theme.min.css',
@@ -60,42 +71,34 @@ gulp.task('merge-css', function() {
  });
 
  gulp.task('html-replace', function() {
-    gulp.src('src/**/*.html')
+     gulp.src('src/**/*.html')
     .pipe(htmlReplace({css:'/dist/css/site.css'}))
     .pipe(gulp.dest('dist') );
  });
 
 gulp.task('compress-js', function (cb) {
-        gulp.src('dist/js/*.js')
+         gulp.src('dist/js/*.js')
         .pipe(uglify())
         .pipe(gulp.dest('dist/js'));
 });
 
 gulp.task('cssmin', function () {
-    gulp.src('dist/css/*.css')
+     gulp.src('dist/css/*.css')
         .pipe(cssmin())
         .pipe(gulp.dest('dist/css'));
 });
 
-/*Não usada//
-gulp.task('align', function () {
-    return gulp.src('./gulpfile.js')
-        .pipe(align())
-        .pipe(gulp.dest('./dist/'))
-})
-*/
 
 gulp.task('htmlbeautify', function() {
-  var options = {
-    indentSize: 2
+  var options = {    indentSize: 2
   };
-  gulp.src('./src/*.html')
+   gulp.src('./src/*.html')
     .pipe(htmlbeautify(options))
     .pipe(gulp.dest('./dist/'))
 });
 
 gulp.task('cleanscss', function() {
-   gulp.src('dist/scss')
+    return gulp.src('dist/scss')
         . pipe(clean());
 });
 
@@ -107,29 +110,47 @@ gulp.task('sassprod', ['cleanscss'], function() {
     
     return gulp.src('./src/scss/**/*.scss')
         .pipe(sass(sassProdOptions).on('error', sass.logError))
-        /*RENAME
+        
         .pipe(rename({
             suffix: ".min",
         }))
-        */
-        .pipe(gulp.dest('./dist/css/'));
+        
+        .pipe(gulp.dest('./dist/css/sassTeste/'));
 });
 
 /*
-gulp.task('jshint', function() {
-  return gulp.src('./dist/jsERRO.js')
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'));
+gulp.task('spritess', function () {
+  // Generate our spritesheet
+  var spriteData = gulp.src('./dist/img/*.jpg')
+    .pipe(spritesmith({
+        imgName: 'sprite.png',
+        cssName: 'sprite.css'
+  }));
+ 
+  // Pipe image stream through image optimizer and onto disk
+  var imgStream = spriteData.img
+    // DEV: We must buffer our stream into a Buffer for `imagemin`
+    .pipe(buffer())
+    .pipe(imagemin())
+    .pipe(gulp.dest('./dist/img/'));
+ 
+  // Pipe CSS stream through CSS optimizer and onto disk
+  var cssStream = spriteData.css
+    .pipe(csso())
+    .pipe(gulp.dest('./dist/css/'));
+ 
+  // Return a merged stream to handle both `end` events
+  return merge(imgStream, cssStream);
 });
 */
 
-/*
-gulp.task('csslint', ['sassprod'], function() {
-    
-  csslint.addFormatter('csslint-stylish');
-    
-  gulp.src('dist/css/site.css')
-    .pipe(csslint({'shorthand' : true}))
-    .pipe(csslint.formatter('stylish'));
+
+gulp.task('inlinesource', function () {
+    var options = {
+        compress: false
+    };
+ 
+    return gulp.src('./dist/index.html')
+        .pipe(inlinesource(options))
+        .pipe(gulp.dest('./dist/'));
 });
-*/

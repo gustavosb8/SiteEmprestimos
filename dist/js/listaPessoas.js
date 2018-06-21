@@ -1,1 +1,85 @@
-function preecheTabela(d,r){var l=0,u=$("#bntClose-sucesso");$.each(d,function(e,t){var n=$("<tr>"),s=$("<td>"),o=$("<td>"),a=$("<td>"),c=$("<td>"),i=$("<button>");s.text(d[l].idPessoa),o.text(d[l].nome),a.text(d[l].contato);var p=$("<i>");p.addClass("glyphicon glyphicon-trash"),i.text(""),i.val(d[l].idPessoa),i.append(p),c.append(i),i.addClass("btn btn-danger"),$(i).click(function(){var e={idPessoa:i.val(),nome:o.text(),contato:a.text()};$.ajax({type:"POST",url:"http://localhost:8090/TrojanWebService/webservice/serviceemprestimo/removerpessoa",data:JSON.stringify(e),contentType:"application/json",success:function(e){$("#sucesso").text(e),$("#sucesso").append(u),$("#sucesso").show(),$("#bntClose-sucesso").click(function(){$(this).parent().hide(),location.reload(!0)})}})}),n.append(s),n.append(o),n.append(a),n.append(c),r.append(n),l++})}$(document).ready(function(){$.getJSON("http://localhost:8090/TrojanWebService/webservice/serviceemprestimo/listarpessoas",function(e){preecheTabela(e,$("#tbody"))})}),$(document).ready(function(){$("#bntClose").click(function(){$(this).parent().hide()})});
+function preecheTabela(lista, tbody) {
+    var i = 0;
+    var botao = $('#bntClose-sucesso');
+    $.each(lista, function (key, data) {
+
+        var tr = $('<tr>');
+        var novaLinhaID = $('<td>');
+        var novaLinhaNOME = $('<td>');
+        var novaLinhaCONTATO = $('<td>');
+
+        var novaLinhaOpcao = $('<td>');
+        var button = $('<button>');
+
+        novaLinhaID.text(lista[i].idPessoa);
+        novaLinhaNOME.text(lista[i].nome);
+        novaLinhaCONTATO.text(lista[i].contato);
+
+        var jacks = $('<i>');
+        jacks.addClass('glyphicon glyphicon-trash');
+
+        button.text("");
+        button.val(lista[i].idPessoa);
+        button.append(jacks);
+        novaLinhaOpcao.append(button);
+
+        button.addClass('btn btn-danger');
+
+        $(button).click(function () {
+
+            var url = "http://localhost:8090/TrojanWebService/webservice/serviceemprestimo/removerpessoa";
+
+            var exclusao = {
+                "idPessoa": button.val(),
+                "nome": novaLinhaNOME.text(),
+                "contato": novaLinhaCONTATO.text()
+            };
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: JSON.stringify(exclusao),
+                contentType: 'application/json',
+                success: function (result) {
+                    $('#sucesso').text(result);
+                    $('#sucesso').append(botao);
+                    $('#sucesso').show();
+
+                    $('#bntClose-sucesso').click(function () {
+                        $(this).parent().hide();
+                        location.reload(true);
+                    });
+                }
+
+            });
+        });
+
+
+
+        tr.append(novaLinhaID);
+        tr.append(novaLinhaNOME);
+        tr.append(novaLinhaCONTATO);
+        tr.append(novaLinhaOpcao);
+
+        tbody.append(tr);
+        i++;
+    });
+}
+
+$(document).ready(function () {
+
+    $.getJSON("http://localhost:8090/TrojanWebService/webservice/serviceemprestimo/listarpessoas", function (lista) {
+
+        var tbody = $("#tbody");
+
+        preecheTabela(lista, tbody)
+
+
+    });
+});
+
+$(document).ready(function () {
+    $('#bntClose').click(function () {
+        $(this).parent().hide();
+    });
+});
