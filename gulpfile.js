@@ -5,7 +5,6 @@ const concat = require('gulp-concat');
 const htmlReplace = require('gulp-html-replace');
 
 const uglify = require('gulp-uglify');
-const pump = require('pump');
 
 const cssmin = require('gulp-cssmin');
 
@@ -25,18 +24,20 @@ const rename = require("gulp-rename");
 
 /*sprite*/
 
-//const buffer = require('vinyl-buffer');
-//const csso = require('gulp-csso');
-//const merge = require('merge-stream');
-//const spritesmith = require('gulp.spritesmith');
+const spritesmith = require('gulp.spritesmith');
 
 /*INLINE*/
 
 const inlinesource = require('gulp-inline-source');
 
+/*Cache*/
+
+const rev = require("gulp-rev");
+const revReplace = require("gulp-rev-replace");
+
 
 gulp.task('default', ['copy'], function() {
-    gulp.start('build-img', 'merge-css', 'html-replace', 'compress-js', 'cssmin', 'htmlbeautify' ,'sassprod', 'inlinesource');
+    gulp.start('build-img', 'merge-css', 'html-replace', 'compress-js', 'cssmin', 'htmlbeautify' ,'sassprod', 'inlinesource', 'sprite', 'revreplace');
 })
 
 gulp.task('clean', function() {
@@ -52,7 +53,7 @@ gulp.task('copy', ['clean'] ,  function() {
 
 
 gulp.task('build-img',  function() {
-    gulp.src('dist/img/*')
+    gulp.src('src/img/*')
         .pipe(imagemin() )
         .pipe(gulp.dest('dist/img/') );
 
@@ -118,39 +119,36 @@ gulp.task('sassprod', ['cleanscss'], function() {
         .pipe(gulp.dest('./dist/css/sassTeste/'));
 });
 
-/*
-gulp.task('spritess', function () {
-  // Generate our spritesheet
-  var spriteData = gulp.src('./dist/img/*.jpg')
-    .pipe(spritesmith({
-        imgName: 'sprite.png',
-        cssName: 'sprite.css'
+gulp.task('sprite', function () {
+  var spriteData = gulp.src('dist/img/*.png').pipe(spritesmith({
+    imgName: 'sprite.png',
+    cssName: 'sprite.css',
+    algorithm: 'binary-tree'
   }));
- 
-  // Pipe image stream through image optimizer and onto disk
-  var imgStream = spriteData.img
-    // DEV: We must buffer our stream into a Buffer for `imagemin`
-    .pipe(buffer())
-    .pipe(imagemin())
-    .pipe(gulp.dest('./dist/img/'));
- 
-  // Pipe CSS stream through CSS optimizer and onto disk
-  var cssStream = spriteData.css
-    .pipe(csso())
-    .pipe(gulp.dest('./dist/css/'));
- 
-  // Return a merged stream to handle both `end` events
-  return merge(imgStream, cssStream);
+  return spriteData.pipe(gulp.dest('dist/sprite/'));
 });
-*/
-
 
 gulp.task('inlinesource', function () {
     var options = {
         compress: false
     };
- 
     return gulp.src('./dist/index.html')
         .pipe(inlinesource(options))
         .pipe(gulp.dest('./dist/'));
+});
+
+gulp.task('revision', function(){
+  return gulp.src(['dist/**/*.css', 'dist/**/*.js', 'dist/**/*.png'])
+    .pipe(rev())
+    .pipe(gulp.dest('cache/'))
+    .pipe(rev.manifest())
+    .pipe(gulp.dest('cache/'))
+})
+ 
+gulp.task('revreplace', ['revision'], function(){
+  var manifest = gulp.src('./cache/rev-manifest.json');
+ 
+  return gulp.src('dist/index.html')
+    .pipe(revReplace({manifest: manifest}))
+    .pipe(gulp.dest('cache/'));
 });
